@@ -74,7 +74,7 @@ def fetch_transcript(video_id):
     return " ".join(snippet.text for snippet in transcript)
 
 
-def analyze(prompt_text, transcript_text, use_search):
+def analyse(prompt_text, transcript_text, use_search):
 
     client = genai.Client(
         vertexai=True,
@@ -107,17 +107,19 @@ def analyze(prompt_text, transcript_text, use_search):
 st.title("YouTube Narrative Fact Checker")
 
 video_url = st.text_input("YouTube URL")
-
-use_search = st.checkbox("Enable live web fact-checking", value=True)
+label = "Enable live web fact-checking"
+help = "Toggle on only for current events which are likely beyond LLM training data."
+value = False  # Default checkbox state
+use_search = st.checkbox(label=label, help=help,value=value)
 
 with st.expander("Edit analysis prompt"):
     user_prompt = st.text_area(
         "Prompt",
         value=DEFAULT_PROMPT,
-        height=220,
+        height=3000,
     )
 
-run = st.button("Analyze")
+run = st.button("Analyse")
 
 # ------------------------------------------------
 # Execution
@@ -134,8 +136,8 @@ if run:
     with st.spinner("Fetching transcript..."):
         transcript_text = fetch_transcript(video_id)
 
-    with st.spinner("Analyzing video narrative..."):
-        result = analyze(user_prompt, transcript_text, use_search)
+    with st.spinner("Analysing video narrative..."):
+        result = analyse(user_prompt, transcript_text, use_search)
 
     st.subheader("Analysis")
     st.write(result)
