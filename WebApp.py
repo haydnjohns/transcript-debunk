@@ -1,5 +1,7 @@
 import os
+import json
 import re
+import tempfile
 import streamlit as st
 from youtube_transcript_api import YouTubeTranscriptApi
 from google import genai
@@ -10,9 +12,25 @@ from google.genai.types import (
     Tool,
 )
 
-# -------------------------
+# ------------------------------------------------
+# Load Vertex credentials from Streamlit secrets
+# ------------------------------------------------
+
+if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
+
+    creds = json.loads(st.secrets["GOOGLE_APPLICATION_CREDENTIALS_JSON"])
+
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
+    json.dump(creds, open(temp_file.name, "w"))
+
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_file.name
+    os.environ["GOOGLE_CLOUD_PROJECT"] = st.secrets["GOOGLE_CLOUD_PROJECT"]
+    os.environ["GOOGLE_CLOUD_LOCATION"] = st.secrets["GOOGLE_CLOUD_LOCATION"]
+    os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = st.secrets["GOOGLE_GENAI_USE_VERTEXAI"]
+
+# ------------------------------------------------
 # Default prompt
-# -------------------------
+# ------------------------------------------------
 
 DEFAULT_PROMPT = """Critically evaluate the following YouTube transcript as if it may contain misinformation or misleading framing. Use up-to-date web sources to fact-check key claims, but do not limit the analysis to isolated claim verification.
 
@@ -24,9 +42,9 @@ Identify:
 Then provide an overall assessment of the video’s central narrative, explaining whether it fairly represents the evidence or constructs a misleading storyline. Ground all conclusions in current web information.
 """
 
-# -------------------------
+# ------------------------------------------------
 # Helpers
-# -------------------------
+# ------------------------------------------------
 
 def extract_video_id(url):
     patterns = [
@@ -45,13 +63,7 @@ def fetch_transcript(video_id):
     return " ".join(snippet.text for snippet in transcript)
 
 
-def analyze(text_prompt, transcript_text, use_search):
-
-    # --- Vertex / credentials setup ---
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "key.json"  # your JSON file
-    os.environ["GOOGLE_CLOUD_PROJECT"] = "gen-lang-client-0584061357"
-    os.environ["GOOGLE_CLOUD_LOCATION"] = "global"
-    os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "True"
+def analyze(prompt_text, transcript_text, use_search):
 
     client = genai.Client(
         vertexai=True,
@@ -60,8 +72,7 @@ def analyze(text_prompt, transcript_text, use_search):
         http_options=HttpOptions(api_version="v1"),
     )
 
-    # --- Prompt assembly ---
-    full_prompt = text_prompt + "\n\n" + transcript_text
+    full_prompt = prompt_text + "\n\n" + transcript_text
 
     config = None
     if use_search:
@@ -69,7 +80,6 @@ def analyze(text_prompt, transcript_text, use_search):
             tools=[Tool(google_search=GoogleSearch())]
         )
 
-    # --- Model call ---
     response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=full_prompt,
@@ -79,9 +89,9 @@ def analyze(text_prompt, transcript_text, use_search):
     return response.text
 
 
-# -------------------------
+# ------------------------------------------------
 # UI
-# -------------------------
+# ------------------------------------------------
 
 st.title("YouTube Narrative Fact Checker")
 
@@ -98,9 +108,9 @@ with st.expander("Edit analysis prompt"):
 
 run = st.button("Analyze")
 
-# -------------------------
+# ------------------------------------------------
 # Execution
-# -------------------------
+# ------------------------------------------------
 
 if run:
 
@@ -113,7 +123,7 @@ if run:
     with st.spinner("Fetching transcript..."):
         transcript_text = fetch_transcript(video_id)
 
-    with st.spinner("Analyzing..."):
+    with st.spinner("Analyzing video narrative..."):
         result = analyze(user_prompt, transcript_text, use_search)
 
     st.subheader("Analysis")
