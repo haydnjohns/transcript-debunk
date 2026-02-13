@@ -32,7 +32,7 @@ if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
 # Default prompt
 # ------------------------------------------------
 
-DEFAULT_PROMPT = """CYou are an expert fact‑checker. Review this transcript for misinformation and misleading framing. Produce **short, punchy notes** in bullet points only.
+DEFAULT_PROMPT = """You are an expert fact‑checker. Review this transcript for misinformation and misleading framing. Produce **short, punchy notes** in bullet points only.
 
 For each major claim in the transcript:
 
