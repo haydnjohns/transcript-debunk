@@ -32,14 +32,25 @@ if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
 # Default prompt
 # ------------------------------------------------
 
-DEFAULT_PROMPT = """Critically evaluate the following YouTube transcript as if it may contain misinformation or misleading framing. Use up-to-date web sources to fact-check key claims, but do not limit the analysis to isolated claim verification.
+DEFAULT_PROMPT = """CYou are an expert fact‑checker. Review this transcript for misinformation and misleading framing. Produce **short, punchy notes** in bullet points only.
 
-Identify:
-- Claims that are false, unsupported, or contradicted by current evidence
-- Claims that are technically or partially true but presented in a misleading way
-- Omissions, framing, or rhetorical techniques that distort the broader picture
+For each major claim in the transcript:
 
-Then provide an overall assessment of the video’s central narrative, explaining whether it fairly represents the evidence or constructs a misleading storyline. Ground all conclusions in current web information.
+- **Label the claim** briefly
+- State whether it is **True / Partially True / False / Unsupported**
+- Provide **a single short sentence** explaining why, citing current web facts
+- Include a **URL or one reference per claim**
+
+Then give a **brief overall summary (3–5 bullets)** evaluating the overarching narrative, focusing on whether the video’s story is misleading.
+
+Format output exactly like:
+
+CLAIMS
+• Claim: … — Verdict: … — Why: … — Source: …
+
+SUMMARY
+• … (short punchy note)
+• … (short punchy note)
 """
 
 # ------------------------------------------------
