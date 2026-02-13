@@ -95,6 +95,7 @@ def analyse(prompt_text, transcript_text, use_search):
 # ------------------------------------------------
 
 st.title("YouTube Narrative Fact Checker")
+st.info("Disclaimer: This tool uses AI which can make mistakes. Check important outputs")
 
 video_url = st.text_input("YouTube URL")
 label = "Enable live web fact-checking"
