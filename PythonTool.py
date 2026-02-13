@@ -12,7 +12,7 @@ from google.genai.types import (
 # 1. Initialise
 # ------------------------------
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "key.json"  # adjust filename if different
-os.environ["GOOGLE_CLOUD_PROJECT"] = "gen-lang-client-0584061357"
+os.environ["GOOGLE_CLOUD_PROJECT"] = "gen-lang-client-xxx"
 os.environ["GOOGLE_CLOUD_LOCATION"] = "global"
 os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "True"
 client = genai.Client(http_options=HttpOptions(api_version="v1"))
