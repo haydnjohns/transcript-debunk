@@ -95,8 +95,10 @@ def analyse(prompt_text, transcript_text, use_search):
 # ------------------------------------------------
 
 st.title("YouTube Narrative Fact Checker")
-st.info("Disclaimer: This tool uses AI which can make mistakes. Check important outputs")
-
+st.info("Disclaimer: This tool uses AI which can make mistakes. Check important outputs.")
+st.set_page_config(
+    page_title="YouTube Debunker",  # Tab title
+)
 video_url = st.text_input("YouTube URL")
 label = "Enable live web fact-checking"
 help = "Toggle on only for current events which are likely beyond LLM training data."
