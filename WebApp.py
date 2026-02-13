@@ -34,23 +34,13 @@ if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
 
 DEFAULT_PROMPT = """You are an expert fact‑checker. Review this transcript for misinformation and misleading framing. Produce **short, punchy notes** in bullet points only.
 
-For each major claim in the transcript:
+For each claim in the transcript that is found to be less than true:
 
 - **Label the claim** briefly
-- State whether it is **True / Partially True / False / Unsupported**
+- State whether it is **Partially True / False / Unsupported / True but misleading**
 - Provide **a single short sentence** explaining why, citing current web facts
-- Include a **URL or one reference per claim**
 
 Then give a **brief overall summary (3–5 bullets)** evaluating the overarching narrative, focusing on whether the video’s story is misleading.
-
-Format output exactly like:
-
-CLAIMS
-• Claim: … — Verdict: … — Why: … — Source: …
-
-SUMMARY
-• … (short punchy note)
-• … (short punchy note)
 """
 
 # ------------------------------------------------
@@ -109,14 +99,13 @@ st.title("YouTube Narrative Fact Checker")
 video_url = st.text_input("YouTube URL")
 label = "Enable live web fact-checking"
 help = "Toggle on only for current events which are likely beyond LLM training data."
-value = False  # Default checkbox state
-use_search = st.checkbox(label=label, help=help,value=value)
+use_search = st.checkbox(label=label, help=help,value=False)
 
 with st.expander("Edit analysis prompt"):
     user_prompt = st.text_area(
         "Prompt",
         value=DEFAULT_PROMPT,
-        height=3000,
+        height=300,
     )
 
 run = st.button("Analyse")
